@@ -1,0 +1,7 @@
+### Ignore Gradle files
+.gradle
+**/build/
+gradle
+!src/**/build/
+gradlew
+gradlew.bat
