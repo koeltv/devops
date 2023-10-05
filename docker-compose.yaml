@@ -24,9 +24,9 @@ services:
     container_name: rnvako_broker
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
-      interval: 10s
+      interval: 5s
       timeout: 30s
-      retries: 3
+      retries: 10
     volumes:
       - ./broker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./broker/definitions.json:/etc/rabbitmq/definitions.json:ro
