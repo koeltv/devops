@@ -1,6 +1,5 @@
 package com.koeltv.plugins
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.server.application.*
 import pl.jutupe.ktor_rabbitmq.RabbitMQ
 import pl.jutupe.ktor_rabbitmq.consume
@@ -22,8 +21,8 @@ fun Application.configureQueuing() {
 
         enableLogging()
 
-        serialize { jacksonObjectMapper().writeValueAsBytes(it) }
-        deserialize { bytes, type -> jacksonObjectMapper().readValue(bytes, type.javaObjectType) }
+        serialize { (it as String).toByteArray() }
+        deserialize { bytes, _ -> String(bytes) }
 
         initialize {
             exchangeDeclare(EXCHANGE, "direct", true)
@@ -43,6 +42,6 @@ fun Application.configureQueuing() {
     }
 }
 
-fun ApplicationCall.publishToLog(body: String) {
-    publish(EXCHANGE, LOG_QUEUE, null, "SND $body")
+fun ApplicationCall.publishToLog(message: String) {
+    publish(EXCHANGE, LOG_QUEUE, null, message)
 }

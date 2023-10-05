@@ -2,7 +2,6 @@ val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 
-val jacksonVersion: String by project
 val ktorRabbitMQVersion: String by project
 val rabbitMQVersion: String by project
 
@@ -35,7 +34,6 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     implementation("com.github.JUtupe:ktor-rabbitmq:$ktorRabbitMQVersion")
     implementation("com.rabbitmq:amqp-client:$rabbitMQVersion")

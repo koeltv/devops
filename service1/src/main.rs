@@ -21,14 +21,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     for _ in 0..20 {
         let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
         // Format message (ex: "1 2022-10-01T06:35:01.373Z 192.168.2.22:8000")
-        let message = format!("{} {} {}", counter, timestamp, &service2_address);
+        let message = format!("SND {} {} {}", counter, timestamp, &service2_address);
         // Write the message to the message queue
-        send_to_queue(&channel, "message", message.clone().into_bytes()).await.unwrap();
+        send_to_queue(&channel, "message", &message).await.unwrap();
         // Send the message to service 2 and log the result to the log queue
-        send_to_queue(&channel, "log", match send_message(&service2_address, &message).await {
-            Ok(status) => { format!("{} {}", status, timestamp) }
+        send_to_queue(&channel, "log", &match send_message(&service2_address, &message).await {
+            Ok(status) => { format!("{} {}", status.as_u16(), timestamp) }
             Err(error) => error.to_string()
-        }.into_bytes()).await.unwrap();
+        }).await.unwrap();
         // Increase the counter
         counter += 1;
         // Wait for 2 seconds before the next iteration
@@ -36,7 +36,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Write "SND STOP" to the log queue
-    send_to_queue(&channel, "log", "SND STOP".to_string().into_bytes()).await.unwrap();
+    send_to_queue(&channel, "log", "SND STOP").await.unwrap();
     // Close the channel and connection
     channel.close().await.unwrap();
     connection.close().await.unwrap();
@@ -90,10 +90,10 @@ async fn setup_rabbitmq_channel(connection: &Connection) -> Channel {
     return channel;
 }
 
-pub async fn send_to_queue(channel: &Channel, routing_key: &str, content: Vec<u8>) -> Result<(), impl Error> {
+pub async fn send_to_queue(channel: &Channel, routing_key: &str, content: &str) -> Result<(), impl Error> {
     return channel.basic_publish(
         BasicProperties::default(),
-        content,
+        content.to_string().into_bytes(),
         BasicPublishArguments::new("exchange", routing_key),
     ).await;
 }

@@ -1,19 +1,80 @@
 # Results
 
-Langages used are [Kotlin](https://kotlinlang.org/) and [Rust](https://www.rust-lang.org/)
+Langages used are [Rust](https://www.rust-lang.org/) (service 1), [Kotlin](https://kotlinlang.org/) (service 2) and [Java](https://www.java.com) (monitor).
 
-## Output of `docker container ls`
-```
-CONTAINER ID   IMAGE             COMMAND                  CREATED              STATUS         PORTS                    NAMES
-3ee54a43f774   rnvako-service2   "java -jar service.j…"   About a minute ago   Up 3 seconds   0.0.0.0:8000->8000/tcp   rnvako_service2
-a49a84a4e5d6   rnvako-service1   "service1"               7 minutes ago        Up 3 seconds                            rnvako_service1
+## Output of `curl localhost:8087`
+```text
+error sending request for url (http://service2:8000/): error trying to connect: tcp connect error: Connection refused (os error 111)
+error sending request for url (http://service2:8000/): error trying to connect: tcp connect error: Connection refused (os error 111)
+error sending request for url (http://service2:8000/): error trying to connect: tcp connect error: Connection refused (os error 111)
+SND 1 2023-10-05T22:21:41.114Z service2:8000 MSG
+SND 2 2023-10-05T22:21:43.130Z service2:8000 MSG
+SND 3 2023-10-05T22:21:45.133Z service2:8000 MSG
+SND 4 2023-10-05T22:21:47.137Z service2:8000 MSG
+SND 4 2023-10-05T22:21:47.137Z service2:8000 192.168.96.3:52484
+200 2023-10-05T22:21:47.137Z
+SND 5 2023-10-05T22:21:49.553Z service2:8000 MSG
+SND 5 2023-10-05T22:21:49.553Z service2:8000 192.168.96.3:52488
+200 2023-10-05T22:21:49.553Z
+SND 6 2023-10-05T22:21:51.577Z service2:8000 MSG
+SND 6 2023-10-05T22:21:51.577Z service2:8000 192.168.96.3:52504
+200 2023-10-05T22:21:51.577Z
+SND 7 2023-10-05T22:21:53.594Z service2:8000 MSG
+SND 7 2023-10-05T22:21:53.594Z service2:8000 192.168.96.3:52506
+200 2023-10-05T22:21:53.594Z
+SND 8 2023-10-05T22:21:55.607Z service2:8000 MSG
+SND 8 2023-10-05T22:21:55.607Z service2:8000 192.168.96.3:52508
+200 2023-10-05T22:21:55.607Z
+SND 9 2023-10-05T22:21:57.618Z service2:8000 MSG
+SND 9 2023-10-05T22:21:57.618Z service2:8000 192.168.96.3:52510
+200 2023-10-05T22:21:57.618Z
+SND 10 2023-10-05T22:21:59.634Z service2:8000 MSG
+SND 10 2023-10-05T22:21:59.634Z service2:8000 192.168.96.3:52516
+200 2023-10-05T22:21:59.634Z
+SND 11 2023-10-05T22:22:01.646Z service2:8000 MSG
+SND 11 2023-10-05T22:22:01.646Z service2:8000 192.168.96.3:52544
+200 2023-10-05T22:22:01.646Z
+SND 12 2023-10-05T22:22:03.655Z service2:8000 MSG
+SND 12 2023-10-05T22:22:03.655Z service2:8000 192.168.96.3:52548
+200 2023-10-05T22:22:03.655Z
+SND 13 2023-10-05T22:22:05.666Z service2:8000 MSG
+SND 13 2023-10-05T22:22:05.666Z service2:8000 192.168.96.3:52550
+200 2023-10-05T22:22:05.666Z
+SND 14 2023-10-05T22:22:07.677Z service2:8000 MSG
+SND 14 2023-10-05T22:22:07.677Z service2:8000 192.168.96.3:52552
+200 2023-10-05T22:22:07.677Z
+SND 15 2023-10-05T22:22:09.687Z service2:8000 MSG
+SND 15 2023-10-05T22:22:09.687Z service2:8000 192.168.96.3:52556
+200 2023-10-05T22:22:09.687Z
+SND 16 2023-10-05T22:22:11.702Z service2:8000 MSG
+SND 16 2023-10-05T22:22:11.702Z service2:8000 192.168.96.3:52560
+200 2023-10-05T22:22:11.702Z
+SND 17 2023-10-05T22:22:13.711Z service2:8000 MSG
+SND 17 2023-10-05T22:22:13.711Z service2:8000 192.168.96.3:52584
+200 2023-10-05T22:22:13.711Z
+SND 18 2023-10-05T22:22:15.721Z service2:8000 MSG
+SND 18 2023-10-05T22:22:15.721Z service2:8000 192.168.96.3:52588
+200 2023-10-05T22:22:15.721Z
+SND 19 2023-10-05T22:22:17.733Z service2:8000 MSG
+SND 19 2023-10-05T22:22:17.733Z service2:8000 192.168.96.3:52592
+200 2023-10-05T22:22:17.733Z
+SND 20 2023-10-05T22:22:19.745Z service2:8000 MSG
+SND 20 2023-10-05T22:22:19.745Z service2:8000 192.168.96.3:52596
+200 2023-10-05T22:22:19.745Z
+SND STOP
 ```
 
-## Output of `docker network ls`
+## Output of `uname -a`
 ```
-NETWORK ID     NAME                       DRIVER    SCOPE
-79e447432076   bridge                     bridge    local
-da594a2fe7fc   host                       host      local
-37bfab685630   none                       null      local
-13be1bb0dca1   rnvako_default             bridge    local
+MINGW64_NT-10.0-19045 Val-PC 3.3.6-341.x86_64 2022-09-05 20:28 UTC x86_64 Msys
+```
+
+## Output of `docker --version`
+```
+Docker version 24.0.6, build ed223bc
+```
+
+## Output of `docker-compose --version`
+```
+Docker Compose version v2.21.0-desktop.1
 ```
