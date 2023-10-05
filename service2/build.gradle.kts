@@ -1,8 +1,10 @@
-@file:Suppress("INACCESSIBLE_TYPE")
-
 val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
+
+val jacksonVersion: String by project
+val ktorRabbitMQVersion: String by project
+val rabbitMQVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.9.10"
@@ -26,12 +28,18 @@ kotlin {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    implementation("com.github.JUtupe:ktor-rabbitmq:$ktorRabbitMQVersion")
+    implementation("com.rabbitmq:amqp-client:$rabbitMQVersion")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
@@ -50,7 +58,9 @@ runtime {
                 val format = if (it == "windows") "zip" else "tar.gz"
                 val encodedJreVersion = jreVersion.replace("_", "%2B")
                 val link = "$downloadPage/jdk-$encodedJreVersion/OpenJDK17U-jdk_x64_${it}_hotspot_$jreVersion.$format"
-                targetPlatform(it) { setJdkHome(jdkDownload(link)) }
+                targetPlatform(it) {
+                    @Suppress("INACCESSIBLE_TYPE") setJdkHome(jdkDownload(link))
+                }
             }
     }
 }

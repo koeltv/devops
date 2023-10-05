@@ -3,15 +3,35 @@ services:
   service1:
     build: ./service1
     container_name: rnvako_service1
+    depends_on:
+      broker:
+        condition: service_healthy
     environment:
       - SERVER_URL=service2:8000
-    volumes:
-      - ./logs:/logs
+      - RABBIT_MQ_HOST=broker
 
   service2:
     build: ./service2
     container_name: rnvako_service2
+    depends_on:
+      broker:
+        condition: service_healthy
     ports:
       - "8000:8000"
+    environment:
+      - RABBIT_MQ_HOST=broker
+
+  broker:
+    image: rabbitmq:3.12.6-management-alpine
+    container_name: rnvako_broker
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 30s
+      retries: 3
+    ports:
+      - "5672:5672"
+      - "8888:15672"
     volumes:
-      - ./logs:/logs
+      - ./broker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./broker/definitions.json:/etc/rabbitmq/definitions.json:ro

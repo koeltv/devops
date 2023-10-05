@@ -1,6 +1,5 @@
 package com.koeltv.plugins
 
-import com.koeltv.CustomEngineMain
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -13,12 +12,10 @@ fun Application.configureRouting() {
         post {
             val received = call.receiveText()
 
-            if (received == "STOP") CustomEngineMain.shutdown()
-            else {
-                val remoteAddress = call.request.origin.let { "${it.remoteAddress}:${it.remotePort}" }
-                writeToLog("$received $remoteAddress")
-                call.respond(HttpStatusCode.OK)
-            }
+            val remoteAddress = call.request.origin.let { "${it.remoteAddress}:${it.remotePort}" }
+
+            call.publishToLog("$received $remoteAddress")
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.koeltv
 
-import com.koeltv.plugins.configureLogging
+import com.koeltv.plugins.configureQueuing
 import com.koeltv.plugins.configureRouting
 import io.ktor.server.application.*
 
@@ -14,6 +14,6 @@ fun Application.module() {
     Thread.sleep(2000)
     println("done")
 
-    configureLogging()
+    configureQueuing()
     configureRouting()
 }
