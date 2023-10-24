@@ -5,6 +5,7 @@ WORKDIR /home/project
 # Copy gradle files
 COPY gradle ./gradle
 COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+RUN ["chmod", "+x", "./gradlew"]
 # Download dependencies
 RUN ["./gradlew", "--refresh-dependencies", "--no-daemon"]
 # Copy the source code
