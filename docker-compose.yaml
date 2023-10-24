@@ -9,6 +9,8 @@ services:
     environment:
       - SERVER_URL=service2:8000
       - RABBIT_MQ_HOST=broker
+    networks:
+      - internal
 
   service2:
     build: ./service2
@@ -18,6 +20,8 @@ services:
         condition: service_healthy
     environment:
       - RABBIT_MQ_HOST=broker
+    networks:
+      - internal
 
   broker:
     image: rabbitmq:3.12.6-management-alpine
@@ -27,6 +31,8 @@ services:
       interval: 5s
       timeout: 30s
       retries: 10
+    networks:
+      - internal
     volumes:
       - ./broker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./broker/definitions.json:/etc/rabbitmq/definitions.json:ro
@@ -41,3 +47,12 @@ services:
       - "8087:8080"
     environment:
       - SPRING_RABBITMQ_HOST=broker
+    networks:
+      - internal
+      - default
+
+networks:
+  default:
+  internal:
+    name: rnvako_internal
+    internal: true
