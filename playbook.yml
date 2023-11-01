@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  become: yes
+  remote_user: sshuser
+  tasks:
+    - name: ensure git is at the latest version
+      apt:
+        name: git
+        state: latest
+
+    - name: query the uptime
+      command: uptime
+      register: uptime
+
+    - name: display uptime
+      debug:
+        var: uptime.stdout
