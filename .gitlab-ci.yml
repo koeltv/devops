@@ -5,9 +5,9 @@ stages:
 
 before_script:
   - echo "Setting up environment"
-  - apt update -y && apt install -y curl cargo libssl-dev pkg-config
-  - curl -fsSL https://get.docker.com -o get-docker.sh
-  - sh ./get-docker.sh
+  - apt update -y && apt install -y curl
+  - curl -fsSL https://get.docker.com -o get-docker.sh && sh ./get-docker.sh
+  - apt install -y cargo libssl-dev pkg-config
 
 build-job:
   stage: build
