@@ -22,9 +22,9 @@ unit-test-job:
     - echo "Running service1 unit tests..."
     - cd ./service1 && cargo test && cd ..
     - echo "Running service2 unit tests..."
-    - cd ./service2 && ./gradlew test && cd ..
+    - cd ./service2 && chmod +x ./gradlew && ./gradlew test && cd ..
     - echo "Running monitor unit tests..."
-    - cd ./monitor && ./gradlew test && cd ..
+    - cd ./monitor && chmod +x ./gradlew && ./gradlew test && cd ..
 
 integration-test-job:
   stage: test
