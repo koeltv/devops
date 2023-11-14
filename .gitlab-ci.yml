@@ -1,31 +1,40 @@
-stages:          # List of stages for jobs, and their order of execution
+stages:
   - build
   - test
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+before_script:
+  - echo "Setting up environment"
+  - apt update -y && apt install -y docker-ce cargo
+
+build-job:
   stage: build
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+    - echo "Compiling services and publishing to local registry..."
+    - docker-compose build
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
+unit-test-job:
+  stage: test
   script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+    - echo "Running unit tests..."
+    - echo "Running service1 unit tests..."
+    - cd ./service1 && cargo test && cd ..
+    - echo "Running service2 unit tests..."
+    - cd ./service2 && ./gradlew test && cd ..
+    - echo "Running monitor unit tests..."
+    - cd ./monitor && ./gradlew test && cd ..
 
-integration-test-job:   # This job also runs in the test stage.
-  stage: test           # It can run at the same time as unit-test-job (in parallel).
+integration-test-job:
+  stage: test
   script:
-    - echo "Running integration tests... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - echo "Running integration tests..."
+    - docker-compose -p testing-env up -d
+    - echo "Testing..."
+    - docker-compose -p testing-env down
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+deploy-job:
+  stage: deploy
   environment: production
   script:
     - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - docker-compose up -d
