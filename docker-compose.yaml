@@ -50,5 +50,4 @@ services:
 networks:
   default:
   internal:
-    name: rnvako_internal
     internal: true
