@@ -5,7 +5,7 @@ stages:
 
 before_script:
   - echo "Setting up environment"
-  - apt update -y && apt install -y curl cargo
+  - apt update -y && apt install -y curl cargo openssl
   - curl -fsSL https://get.docker.com -o get-docker.sh
   - sh ./get-docker.sh
 
