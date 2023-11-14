@@ -8,13 +8,12 @@ before_script:
   - apt update -y && apt install -y curl cargo
   - curl -fsSL https://get.docker.com -o get-docker.sh
   - sh ./get-docker.sh
-  - apt install docker-compose-plugin
 
 build-job:
   stage: build
   script:
     - echo "Compiling services and publishing to local registry..."
-    - docker-compose build
+    - docker compose build
 
 unit-test-job:
   stage: test
@@ -31,13 +30,13 @@ integration-test-job:
   stage: test
   script:
     - echo "Running integration tests..."
-    - docker-compose -p testing-env up -d
+    - docker compose -p testing-env up -d
     - echo "Testing..."
-    - docker-compose -p testing-env down
+    - docker compose -p testing-env down
 
 deploy-job:
   stage: deploy
   environment: production
   script:
     - echo "Deploying application..."
-    - docker-compose up -d
+    - docker compose up -d
