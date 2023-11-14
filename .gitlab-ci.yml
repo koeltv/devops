@@ -8,6 +8,7 @@ before_script:
   - apt update -y && apt install -y curl cargo
   - curl -fsSL https://get.docker.com -o get-docker.sh
   - sh ./get-docker.sh
+  - apt install docker-compose-plugin
 
 build-job:
   stage: build
