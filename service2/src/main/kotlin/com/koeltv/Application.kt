@@ -14,6 +14,6 @@ fun Application.module() {
     Thread.sleep(2000)
     println("done")
 
-    configureQueuing()
+    if (!developmentMode) configureQueuing()
     configureRouting()
 }

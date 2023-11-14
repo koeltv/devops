@@ -43,5 +43,7 @@ fun Application.configureQueuing() {
 }
 
 fun ApplicationCall.publishToLog(message: String) {
-    publish(EXCHANGE, LOG_QUEUE, null, message)
+    application.attributes.getOrNull(RabbitMQ.RabbitMQKey)
+        ?.publish(EXCHANGE, LOG_QUEUE, null, message)
+        ?: application.environment.log.info(message)
 }
