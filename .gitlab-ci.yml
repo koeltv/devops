@@ -30,8 +30,10 @@ integration-test-job:
   stage: test
   script:
     - echo "Running integration tests..."
-    - docker compose -p testing-env up -d
-    - echo "Testing..."
+    - MONITOR_PORT=8088 docker compose -p testing-env up -d
+    - cd ./tests
+    - docker run --rm --network testing-env_default -v ${PWD}/apis:/apis schemathesis/schemathesis:v3.21.0-buster run --checks all --base-url http://monitor:8080 /apis/openapi.yml
+    - cd ..
     - docker compose -p testing-env down
 
 deploy-job:

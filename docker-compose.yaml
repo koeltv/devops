@@ -2,7 +2,6 @@ version: '3'
 services:
   service1:
     build: ./service1
-    container_name: rnvako_service1
     depends_on:
       broker:
         condition: service_healthy
@@ -14,7 +13,6 @@ services:
 
   service2:
     build: ./service2
-    container_name: rnvako_service2
     depends_on:
       broker:
         condition: service_healthy
@@ -25,7 +23,6 @@ services:
 
   broker:
     image: rabbitmq:3.12.6-management-alpine
-    container_name: rnvako_broker
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 5s
@@ -39,12 +36,11 @@ services:
 
   monitor:
     build: ./monitor
-    container_name: rnvako_monitor
     depends_on:
       broker:
         condition: service_healthy
     ports:
-      - "8087:8080"
+      - "${MONITOR_PORT:-8087}:8080"
     environment:
       - SPRING_RABBITMQ_HOST=broker
     networks:
