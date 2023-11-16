@@ -85,6 +85,7 @@ async fn setup_rabbitmq_channel(connection: &Connection) -> Channel {
 
     // Bind the queues to exchange
     const MAX_RETRIES: usize = 5;
+    const DELAY: Duration = Duration::from_secs(2);
     let mut retry_count = 0;
     loop {
         let message_queue_bound = match channel.queue_bind(QueueBindArguments::new(&message_queue, "exchange", &message_queue)).await {
@@ -105,6 +106,7 @@ async fn setup_rabbitmq_channel(connection: &Connection) -> Channel {
         else { retry_count += 1 }
 
         if retry_count >= MAX_RETRIES { panic!("Unable to establish RabbitMQ channels."); }
+        tokio::time::sleep(DELAY).await;
     }
 }
 
