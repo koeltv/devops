@@ -12,7 +12,7 @@ servers:
 ############################################
 
 paths:
-  /messages:
+  /:
     get:
       summary: "Returns all messages"
       description: "Returns all message registered with Monitor-service. Assumed implementation forwards the request to Monitor and returns the result."

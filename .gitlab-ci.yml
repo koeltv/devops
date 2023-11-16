@@ -22,9 +22,9 @@ unit-test-job:
     - echo "Running service1 unit tests..."
     - cd ./service1 && cargo test && cd ..
     - echo "Running service2 unit tests..."
-    - cd ./service2 && chmod +x ./gradlew && ./gradlew test && cd ..
+    - cd ./service2 && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
     - echo "Running monitor unit tests..."
-    - cd ./monitor && chmod +x ./gradlew && ./gradlew test && cd ..
+    - cd ./monitor && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
 
 integration-test-job:
   stage: test
@@ -32,6 +32,7 @@ integration-test-job:
     - echo "Running integration tests..."
     - MONITOR_PORT=8088 docker compose -p testing-env up -d --build --wait && sleep 5
     - docker build -t api-tester ./tests && docker run --rm --network testing-env_default api-tester
+  after_script:
     - docker compose -p testing-env down
 
 deploy-job:
