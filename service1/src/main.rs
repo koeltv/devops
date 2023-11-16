@@ -84,30 +84,10 @@ async fn setup_rabbitmq_channel(connection: &Connection) -> Channel {
     let (log_queue, _, _) = channel.queue_declare(QueueDeclareArguments::durable_client_named("log")).await.unwrap().unwrap();
 
     // Bind the queues to exchange
-    const MAX_RETRIES: usize = 5;
-    const DELAY: Duration = Duration::from_secs(2);
-    let mut retry_count = 0;
-    loop {
-        let message_queue_bound = match channel.queue_bind(QueueBindArguments::new(&message_queue, "exchange", &message_queue)).await {
-            Ok(_) => { true }
-            Err(err) => {
-                eprintln!("Error setting up RabbitMQ {} channel: {}", &message_queue, err);
-                false
-            }
-        };
-        let log_queue_bound = match channel.queue_bind(QueueBindArguments::new(&log_queue, "exchange", &log_queue)).await {
-            Ok(_) => { true }
-            Err(err) => {
-                eprintln!("Error setting up RabbitMQ {} channel: {}", &log_queue,  err);
-                false
-            }
-        };
-        if message_queue_bound && log_queue_bound { return channel }
-        else { retry_count += 1 }
+    channel.queue_bind(QueueBindArguments::new(&message_queue, "exchange", &message_queue)).await.unwrap();
+    channel.queue_bind(QueueBindArguments::new(&log_queue, "exchange", &log_queue)).await.unwrap();
 
-        if retry_count >= MAX_RETRIES { panic!("Unable to establish RabbitMQ channels."); }
-        tokio::time::sleep(DELAY).await;
-    }
+    return channel;
 }
 
 pub async fn send_to_queue(channel: &Channel, routing_key: &str, content: &str) -> Result<(), impl Error> {
