@@ -5,9 +5,9 @@ stages:
 
 before_script:
   - echo "Setting up environment"
-  - apt update -y && apt install -y curl
-  - curl -fsSL https://get.docker.com -o get-docker.sh && sh ./get-docker.sh
-  - apt install -y cargo libssl-dev pkg-config openjdk-17-jdk
+  - apt-get update -y && apt-get install -qq curl > /dev/null
+  - curl -fsSL https://get.docker.com -o get-docker.sh && sh ./get-docker.sh > /dev/null
+  - apt-get install -qq cargo libssl-dev pkg-config openjdk-17-jdk > /dev/null
 
 build-job:
   stage: build
@@ -30,7 +30,7 @@ integration-test-job:
   stage: test
   script:
     - echo "Running integration tests..."
-    - MONITOR_PORT=8088 docker compose -p testing-env up -d --wait
+    - MONITOR_PORT=8088 docker compose -p testing-env up -d --build --wait
     - cd ./tests
     - sleep 5 && docker run --rm --network testing-env_default -v ${PWD}/apis:/apis schemathesis/schemathesis:v3.21.0-buster run --checks all --base-url http://monitor:8080 /apis/openapi.yml
     - cd ..
