@@ -22,7 +22,7 @@ services:
       - internal
 
   broker:
-    image: rabbitmq:3.12.6-management-alpine
+    build: ./broker
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 5s
@@ -30,9 +30,6 @@ services:
       retries: 10
     networks:
       - internal
-    volumes:
-      - ./broker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./broker/definitions.json:/etc/rabbitmq/definitions.json:ro
 
   monitor:
     build: ./monitor
