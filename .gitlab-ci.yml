@@ -25,6 +25,8 @@ unit-test-job:
     - cd ./service2 && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
     - echo "Running monitor unit tests..."
     - cd ./monitor && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
+    - echo "Running gateway tests..."
+    - cd ./gateway && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
 
 integration-test-job:
   stage: test

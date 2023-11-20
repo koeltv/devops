@@ -36,10 +36,15 @@ services:
     depends_on:
       broker:
         condition: service_healthy
-    ports:
-      - "${MONITOR_PORT:-8087}:8080"
     environment:
       - SPRING_RABBITMQ_HOST=broker
+    networks:
+      - internal
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "${GATEWAY_PORT:-8083}:80"
     networks:
       - internal
       - default
