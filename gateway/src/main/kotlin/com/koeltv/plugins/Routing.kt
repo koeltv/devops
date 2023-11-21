@@ -9,6 +9,11 @@ fun Application.configureRouting() {
         get("/messages") {
             call.proxyTo("http://monitor:8080")
         }
+        route("/state") {
+            get {
+                call.proxyTo("http://monitor:8080/state")
+            }
+        }
         get("/mqstatistic") {
             call.proxyTo("http://broker:15672/api/overview") {
                 method = HttpMethod.Get

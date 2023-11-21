@@ -7,6 +7,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,36 +15,30 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class MonitorApplication {
     static final String EXCHANGE_NAME = "exchange";
+    static final String LOG_QUEUE_NAME = "log";
 
-    static final String QUEUE_NAME = "log";
-
-    @Bean
-    Queue queue() {
-        return new Queue(QUEUE_NAME);
+    @Bean("log")
+    Queue logQueue() {
+        return new Queue(LOG_QUEUE_NAME);
     }
 
-    @Bean
+    @Bean("exchange")
     DirectExchange exchange() {
         return new DirectExchange(EXCHANGE_NAME);
     }
 
     @Bean
-    Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(QUEUE_NAME);
+    Binding logBinding(@Qualifier("log") Queue queue, @Qualifier("exchange") DirectExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(LOG_QUEUE_NAME);
     }
 
     @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+    SimpleMessageListenerContainer logContainer(ConnectionFactory connectionFactory, LogMessageReceiver receiver) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(QUEUE_NAME);
-        container.setMessageListener(listenerAdapter);
+        container.setQueueNames(LOG_QUEUE_NAME);
+        container.setMessageListener(new MessageListenerAdapter(receiver, "receiveMessage"));
         return container;
-    }
-
-    @Bean
-    MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
     }
 
     public static void main(String[] args) {

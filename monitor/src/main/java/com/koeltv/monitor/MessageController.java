@@ -8,14 +8,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class MessageController {
-    private final MessageReceiver messageReceiver;
+    private final LogMessageReceiver logReceiver;
+    private final StateMessageReceiver stateReceiver;
 
-    MessageController(@Autowired MessageReceiver messageReceiver) {
-        this.messageReceiver = messageReceiver;
+    MessageController(
+            @Autowired LogMessageReceiver logReceiver,
+            @Autowired StateMessageReceiver stateReceiver
+    ) {
+        this.logReceiver = logReceiver;
+        this.stateReceiver = stateReceiver;
     }
 
     @GetMapping("")
     public String getLogMessages() {
-        return String.join("\n", messageReceiver.getReceivedMessages());
+        return String.join("\n", logReceiver.getReceivedMessages());
+    }
+
+    @GetMapping("/state")
+    public String getState() {
+        return stateReceiver.getLastState();
     }
 }
