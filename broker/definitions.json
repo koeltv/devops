@@ -17,6 +17,33 @@
       "arguments": {
         "x-queue-type": "classic"
       }
+    },
+    {
+      "name": "monitor-state",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "service1-state",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "service2-state",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
     }
   ],
   "exchanges": [
@@ -24,6 +51,15 @@
       "name": "exchange",
       "vhost": "/",
       "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "fanout-state",
+      "vhost": "/",
+      "type": "fanout",
       "durable": true,
       "auto_delete": false,
       "internal": false,
@@ -45,6 +81,30 @@
       "destination": "message",
       "destination_type": "queue",
       "routing_key": "message",
+      "arguments": {}
+    },
+    {
+      "source": "fanout-state",
+      "vhost": "/",
+      "destination": "service1-state",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "fanout-state",
+      "vhost": "/",
+      "destination": "service2-state",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "fanout-state",
+      "vhost": "/",
+      "destination": "monitor-state",
+      "destination_type": "queue",
+      "routing_key": "",
       "arguments": {}
     }
   ],

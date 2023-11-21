@@ -2,11 +2,14 @@ use std::env;
 use std::error::Error;
 use std::time::Duration;
 
-use amqprs::BasicProperties;
-use amqprs::callbacks::{DefaultChannelCallback, DefaultConnectionCallback};
-use amqprs::channel::{BasicPublishArguments, Channel, QueueBindArguments, QueueDeclareArguments};
-use amqprs::connection::{Connection, OpenConnectionArguments};
+use futures_lite::stream::StreamExt;
+use lapin::{BasicProperties, Channel, Connection, ConnectionProperties, options::*, publisher_confirm::Confirmation, types::FieldTable};
+use lapin::protocol::constants::REPLY_SUCCESS;
+use log::error;
 use reqwest::StatusCode;
+use tokio::sync::broadcast;
+use tokio::sync::broadcast::error::TryRecvError;
+use tokio::sync::broadcast::Sender;
 use tokio::time;
 
 #[tokio::main]
@@ -15,22 +18,62 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let service2_address = env::var("SERVER_URL").expect("Environment variable SERVER_URL not found");
 
     // Setup a RabbitMQ connection and open a channel
-    let connection = setup_rabbitmq_connection().await;
-    let channel = setup_rabbitmq_channel(&connection).await;
+    let connection = setup_rabbitmq_connection().await?;
+    let channel = setup_rabbitmq_channel(&connection).await?;
 
-    for _ in 0..20 {
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
-        // Format message (ex: "1 2022-10-01T06:35:01.373Z 192.168.2.22:8000")
-        let message = format!("SND {} {} {}", counter, timestamp, &service2_address);
-        // Write the message to the message queue
-        send_to_queue(&channel, "message", &message).await.unwrap();
-        // Send the message to service 2 and log the result to the log queue
-        send_to_queue(&channel, "log", &match send_message(&service2_address, &message).await {
-            Ok(status) => { format!("{} {}", status.as_u16(), timestamp) }
-            Err(error) => error.to_string()
-        }).await.unwrap();
-        // Increase the counter
-        counter += 1;
+    let (state_sender, mut state_receiver) = broadcast::channel::<String>(1);
+    listen_to_state_queue(channel.clone(), state_sender.clone()).await?;
+
+    let mut is_paused = false;
+    loop {
+        // Check if a new state was received
+        match state_receiver.try_recv() {
+            Ok(state) => {
+                match state.as_str() {
+                    "PAUSED" => {
+                        println!("Received PAUSED. Pausing...");
+                        is_paused = true;
+                    }
+                    "RUNNING" => {
+                        println!("Received RUNNING. Resuming...");
+                        is_paused = false;
+                    }
+                    "SHUTDOWN" => {
+                        println!("Received SHUTDOWN. Stopping...");
+                        break;
+                    }
+                    &_ => {
+                        error!("Received illegal state: {}", state)
+                    }
+                }
+            }
+            Err(TryRecvError::Empty) => {
+                // No new state, continue with regular processing
+            }
+            Err(TryRecvError::Closed) => {
+                println!("State channel is closed");
+                break; // Exit the loop and stop the service
+            }
+            Err(TryRecvError::Lagged(count)) => {
+                println!("State channel lagged behind by {} messages", count);
+            }
+        }
+
+        if !is_paused {
+            let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
+            // Format message (ex: "1 2022-10-01T06:35:01.373Z 192.168.2.22:8000")
+            let message = format!("SND {} {} {}", counter, timestamp, &service2_address);
+            // Write the message to the message queue
+            send_to_queue(&channel, "message", &message).await?;
+            // Send the message to service 2 and log the result to the log queue
+            send_to_queue(&channel, "log", &match send_message(&service2_address, &message).await {
+                Ok(status) => { format!("{} {}", status.as_u16(), timestamp) }
+                Err(error) => error.to_string()
+            }).await?;
+            // Increase the counter
+            counter += 1;
+        }
+
         // Wait for 2 seconds before the next iteration
         time::sleep(Duration::from_secs(2)).await;
     }
@@ -38,10 +81,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Write "SND STOP" to the log queue
     send_to_queue(&channel, "log", "SND STOP").await.unwrap();
     // Close the channel and connection
-    channel.close().await.unwrap();
-    connection.close().await.unwrap();
-    // Wait until stopped
-    time::sleep(Duration::MAX).await;
+    channel.close(REPLY_SUCCESS, "Stopping").await.unwrap();
+    connection.close(REPLY_SUCCESS, "Stopping").await.unwrap();
     Ok(())
 }
 
@@ -55,45 +96,64 @@ async fn send_message(address: &String, message: &str) -> Result<StatusCode, Box
     }
 }
 
-async fn setup_rabbitmq_connection() -> Connection {
-    let rabbitmq_host = env::var("RABBIT_MQ_HOST").unwrap_or("localhost".to_string());
-    let rabbitmq_port = env::var("RABBIT_MQ_PORT").unwrap_or("5672".to_string());
-    let rabbitmq_username = env::var("RABBIT_MQ_USERNAME").unwrap_or("guest".to_string());
-    let rabbitmq_password = env::var("RABBIT_MQ_PASSWORD").unwrap_or("guest".to_string());
+async fn setup_rabbitmq_connection() -> Result<Connection, Box<dyn Error>> {
+    let host = env::var("RABBIT_MQ_HOST").unwrap_or("localhost".to_string());
+    let port = env::var("RABBIT_MQ_PORT").unwrap_or("5672".to_string());
+    let username = env::var("RABBIT_MQ_USERNAME").unwrap_or("guest".to_string());
+    let password = env::var("RABBIT_MQ_PASSWORD").unwrap_or("guest".to_string());
+
+    let address = format!("amqp://{username}:{password}@{host}:{port}");
 
     // Connect to RabbitMQ
-    let connection = Connection::open(&OpenConnectionArguments::new(
-        &*rabbitmq_host,
-        rabbitmq_port.parse().unwrap(),
-        &*rabbitmq_username,
-        &*rabbitmq_password,
-    )).await.unwrap();
+    let connection = Connection::connect(
+        &address,
+        ConnectionProperties::default()
+    ).await?;
 
-    connection.register_callback(DefaultConnectionCallback).await.unwrap();
-
-    return connection;
+    return Ok(connection);
 }
 
-async fn setup_rabbitmq_channel(connection: &Connection) -> Channel {
+async fn setup_rabbitmq_channel(connection: &Connection) -> Result<Channel, Box<dyn Error>> {
     // Open a channel on the connection
-    let channel = connection.open_channel(None).await.unwrap();
-    channel.register_callback(DefaultChannelCallback).await.unwrap();
+    let channel = connection.create_channel().await?;
 
     // Declare both queues
-    let (message_queue, _, _) = channel.queue_declare(QueueDeclareArguments::durable_client_named("message")).await.unwrap().unwrap();
-    let (log_queue, _, _) = channel.queue_declare(QueueDeclareArguments::durable_client_named("log")).await.unwrap().unwrap();
+    channel.queue_declare("message", QueueDeclareOptions { durable: true, ..Default::default() }, FieldTable::default()).await?;
+    channel.queue_declare("log", QueueDeclareOptions { durable: true, ..Default::default() }, FieldTable::default()).await?;
+    channel.queue_declare("service1-state", QueueDeclareOptions { durable: true, ..Default::default() }, FieldTable::default()).await?;
 
-    // Bind the queues to exchange
-    channel.queue_bind(QueueBindArguments::new(&message_queue, "exchange", &message_queue)).await.unwrap();
-    channel.queue_bind(QueueBindArguments::new(&log_queue, "exchange", &log_queue)).await.unwrap();
-
-    return channel;
+    return Ok(channel);
 }
 
-pub async fn send_to_queue(channel: &Channel, routing_key: &str, content: &str) -> Result<(), impl Error> {
-    return channel.basic_publish(
-        BasicProperties::default(),
-        content.to_string().into_bytes(),
-        BasicPublishArguments::new("exchange", routing_key),
-    ).await;
+pub async fn send_to_queue(channel: &Channel, routing_key: &str, content: &str) -> Result<Confirmation, Box<dyn Error>> {
+    let confirmation = channel.basic_publish(
+        "exchange",
+        routing_key,
+        BasicPublishOptions::default(),
+        content.to_string().as_ref(),
+        BasicProperties::default()
+    ).await?.await?;
+
+    return Ok(confirmation);
+}
+
+async fn listen_to_state_queue(channel: Channel, state_sender: Sender<String>) -> Result<(), Box<dyn Error>> {
+    let mut consumer = channel.basic_consume(
+        "service1-state",
+        "state-consumer",
+        BasicConsumeOptions::default(),
+        FieldTable::default()
+    ).await?;
+
+    tokio::spawn(async move {
+        while let Some(payload) = consumer.next().await {
+            let delivery = payload.unwrap();
+
+            let state = String::from_utf8(delivery.data.clone()).unwrap();
+            state_sender.send(state).unwrap();
+            delivery.ack(BasicAckOptions::default()).await.unwrap();
+        }
+    });
+
+    Ok(())
 }
