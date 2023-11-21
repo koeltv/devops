@@ -2,9 +2,6 @@ val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 
-val ktorRabbitMQVersion: String by project
-val rabbitMQVersion: String by project
-
 plugins {
     kotlin("jvm") version "1.9.20"
     id("io.ktor.plugin") version "2.3.6"
@@ -35,9 +32,6 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("io.ktor:ktor-client-cio-jvm")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-
-    implementation("com.github.JUtupe:ktor-rabbitmq:$ktorRabbitMQVersion")
-    implementation("com.rabbitmq:amqp-client:$rabbitMQVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
