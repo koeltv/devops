@@ -28,4 +28,9 @@ public class MessageController {
     public String getState() {
         return stateReceiver.getLastState();
     }
+
+    @GetMapping("/run-log")
+    public String getStateTransitions() {
+        return String.join("\n", stateReceiver.getStateTransitions());
+    }
 }

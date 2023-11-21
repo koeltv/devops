@@ -14,6 +14,9 @@ fun Application.configureRouting() {
                 call.proxyTo("http://monitor:8080/state")
             }
         }
+        get("/run-log") {
+            call.proxyTo("http://monitor:8080/run-log")
+        }
         get("/mqstatistic") {
             call.proxyTo("http://broker:15672/api/overview") {
                 method = HttpMethod.Get

@@ -48,6 +48,19 @@ public class StateMessageReceiver implements PropertyChangeListener {
         return receivedStates.get(receivedStates.size() - 1).getValue();
     }
 
+    public List<String> getStateTransitions() {
+        List<String> stateTransitions = new ArrayList<>(receivedStates.size() - 1);
+        for (int i = 1; i < receivedStates.size(); i++) {
+            stateTransitions.add(String.format(
+                    "%s: %s->%s",
+                    receivedStates.get(i).getKey(),
+                    receivedStates.get(i - 1).getValue(),
+                    receivedStates.get(i).getValue()
+            ));
+        }
+        return stateTransitions;
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("FIRST_VALUE_RECEIVED")) {
