@@ -37,6 +37,20 @@ paths:
             'text/plain':
               schema:
                 $ref: "#/components/schemas/State"
+    put:
+      summary: "Set the value of state"
+      description: "Set the value of state"
+      requestBody:
+        required: true
+        content:
+          'text/plain':
+            schema:
+              $ref: "#/components/schemas/State"
+      responses:
+        "200":
+          description: "OK"
+        "400":
+          description: "Invalid payload"
 
   /run-log:
     get:
