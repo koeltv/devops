@@ -1,6 +1,8 @@
 package com.koeltv.monitor;
 
+import com.koeltv.monitor.file.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.beans.PropertyChangeEvent;
@@ -15,15 +17,24 @@ import java.util.Map;
 @SuppressWarnings("unused")
 @Component
 public class StateMessageReceiver implements PropertyChangeListener {
+    private final FileHandler stateHandler;
     private final List<Map.Entry<String, String>> receivedStates = new ArrayList<>();
 
     public StateMessageReceiver(
-            @Autowired LogMessageReceiver logMessageReceiver
+            @Autowired LogMessageReceiver logMessageReceiver,
+            @Qualifier("stateHandler") FileHandler stateHandler
     ) {
+        this.stateHandler = stateHandler;
         logMessageReceiver.addListener(this);
+
+        receivedStates.addAll(stateHandler.readLinesFromFile().stream().map(line -> {
+            String[] parts = line.split(" ");
+            return Map.entry(parts[0], parts[1]);
+        }).toList());
 
         var initState = Map.entry(getCurrentTime(), "INIT");
         receivedStates.add(initState);
+        stateHandler.appendLineToFile(initState.getKey() + " " + initState.getValue());
     }
 
     private String getCurrentTime() {
@@ -36,6 +47,7 @@ public class StateMessageReceiver implements PropertyChangeListener {
     public void receiveMessage(String state) {
         if (!state.equals(getLastState())) {
             Map.Entry<String, String> timedState = Map.entry(getCurrentTime(), state);
+            stateHandler.appendLineToFile(String.format("%s %s", timedState.getKey(), timedState.getValue()));
             receivedStates.add(timedState);
         }
     }

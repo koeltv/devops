@@ -1,5 +1,6 @@
 package com.koeltv.monitor;
 
+import com.koeltv.monitor.file.FileHandler;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.io.IOException;
 
 @SpringBootApplication
 public class MonitorApplication {
@@ -62,6 +65,16 @@ public class MonitorApplication {
         container.setQueueNames(STATE_QUEUE_NAME);
         container.setMessageListener(new MessageListenerAdapter(receiver, "receiveMessage"));
         return container;
+    }
+
+    @Bean("logHandler")
+    FileHandler logHandler() throws IOException {
+        return new FileHandler("logs.log");
+    }
+
+    @Bean("stateHandler")
+    FileHandler stateHandler() throws IOException {
+        return new FileHandler("state.log");
     }
 
     public static void main(String[] args) {
