@@ -1,7 +1,6 @@
 package com.koeltv.plugins
 
 import com.koeltv.CustomEngineMain
-import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -26,9 +25,7 @@ fun Application.configureRouting() {
                 if (state !in allowedPayloads) {
                     call.respond(HttpStatusCode.BadRequest)
                 } else {
-                    val client = HttpClient()
-
-                    client.post("http://broker:15672/api/exchanges/%2f/fanout-state/publish") {
+                    proxyClient.post("http://broker:15672/api/exchanges/%2f/fanout-state/publish") {
                         basicAuth("guest", "guest")
                         contentType(ContentType.Application.Json)
                         setBody("""{"properties":{},"routing_key":"","payload":"$state","payload_encoding":"string"}""")
@@ -37,7 +34,7 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.OK)
 
                     if (state == "SHUTDOWN") {
-                        runCatching { client.get("http://broker:5000") }
+                        runCatching { proxyClient.get("http://broker:5000") }
                         CustomEngineMain.shutdown()
                     }
                 }
