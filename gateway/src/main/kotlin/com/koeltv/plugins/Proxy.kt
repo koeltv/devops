@@ -10,13 +10,13 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
 
-private val client = HttpClient()
+internal var proxyClient = HttpClient()
 
 // Extension method to process all the served HTML documents
 private fun String.stripDomain(): String = replace(Regex("(https?:)?//[\\w.-]+(:\\d+)?/"), "")
 
 suspend fun ApplicationCall.proxyTo(targetUrl: String, builder: HttpRequestBuilder.() -> Unit = { method = HttpMethod.Get }) {
-    val targetResponse = client.request(targetUrl, builder)
+    val targetResponse = proxyClient.request(targetUrl, builder)
 
     // Get the headers of the client response.
     val proxiedHeaders = targetResponse.headers
