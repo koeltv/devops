@@ -1,0 +1,2 @@
+apt-get update -y && apt-get install -qq curl > /dev/null
+curl -fsSL https://get.docker.com -o get-docker.sh && sed 's/sleep [0-9]\+/sleep 0/g' ./get-docker.sh > docker-setup.sh && sh ./docker-setup.sh > /dev/null

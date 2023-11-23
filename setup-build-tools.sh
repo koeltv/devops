@@ -1,0 +1,1 @@
+apt-get update -y && apt-get install -qq cargo libssl-dev pkg-config openjdk-17-jdk > /dev/null

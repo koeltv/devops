@@ -4,12 +4,6 @@ stages:
   - test
   - deploy
 
-before_script:
-  - echo "Setting up environment"
-  - apt-get update -y && apt-get install -qq curl > /dev/null
-  - curl -fsSL https://get.docker.com -o get-docker.sh && sed 's/sleep [0-9]\+/sleep 0/g' ./get-docker.sh > docker-setup.sh && sh ./docker-setup.sh > /dev/null
-  - apt-get install -qq cargo libssl-dev pkg-config openjdk-17-jdk > /dev/null
-
 static-analysis-job:
   stage: static-analysis
   rules:
@@ -33,11 +27,13 @@ build-job:
   stage: build
   script:
     - echo "Compiling services and publishing to local registry..."
+    - chmod +x ./setup-docker.sh && ./setup-docker.sh
     - docker compose build
 
 unit-test-job:
   stage: test
   script:
+    - chmod +x ./setup-build-tools.sh && ./setup-build-tools.sh
     - echo "Running unit tests..."
     - echo "Running service1 unit tests..."
     - cd ./service1 && cargo test && cd ..
@@ -51,6 +47,7 @@ unit-test-job:
 system-test-job:
   stage: test
   script:
+    - chmod +x ./setup-docker.sh && ./setup-docker.sh
     - echo "Running system tests..."
     - GATEWAY_PORT=8088 docker compose -p testing-env up -d --build --wait && sleep 5
     - docker build -t api-tester ./tests && docker run --rm --network testing-env_default api-tester
@@ -61,5 +58,6 @@ deploy-job:
   stage: deploy
   environment: production
   script:
+    - chmod +x ./setup-docker.sh && ./setup-docker.sh
     - echo "Deploying application..."
     - docker compose up -d
