@@ -13,9 +13,8 @@ before_script:
 static-analysis-job:
   stage: static-analysis
   rules:
-    - exists:
-        - $SONAR_HOST_URL
-        - $SONAR_TOKEN
+    - if: $SONAR_HOST_URL
+    - if: $SONAR_TOKEN
   image:
     name: sonarsource/sonar-scanner-cli:5.0
     entrypoint: [""]
