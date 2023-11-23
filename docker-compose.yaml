@@ -30,9 +30,6 @@ services:
       retries: 10
     networks:
       - internal
-      - default
-    ports:
-      - "15672:15672"
 
   monitor:
     build: ./monitor
