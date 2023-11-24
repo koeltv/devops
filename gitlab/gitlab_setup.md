@@ -51,5 +51,6 @@ This is completely optional as the static analysis job will just be skipped if S
   - In `Variables` click on `Expand`
   - Add variable: Key = `SONAR_TOKEN`, Value = `<YOUR_SONARQUBE_PROJECT_TOKEN>`
   - Add variable: Key = `SONAR_HOST_URL`, Value = `http://sonarqube:9000`
+- Finally, make sure that the `sonar.projectKey` property in [sonar-project.properties](../sonar-project.properties) correspond to the one shown on the SonarQube project (in the URL: `http://localhost:9000/dashboard?id=<YOUR_PROJECT_KEY>`)
 
 Everything should now be working, you can trigger a new pipeline run to check it

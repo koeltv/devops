@@ -38,21 +38,14 @@ unit-test-job:
   script:
     - chmod +x ./setup-build-tools.sh && ./setup-build-tools.sh
     - echo "Running unit tests..."
-    - echo "Running service1 unit tests..."
-    - cd ./service1 && cargo test && cd ..
-    - echo "Running service2 unit tests..."
-    - cd ./service2 && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
-    - echo "Running monitor unit tests..."
-    - cd ./monitor && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
-    - echo "Running gateway tests..."
-    - cd ./gateway && chmod +x ./gradlew && ./gradlew test --no-daemon && cd ..
+    - chmod +x ./unit-tests.sh && ./unit-tests.sh
 
 system-test-job:
   stage: test
   script:
     - chmod +x ./setup-docker.sh && ./setup-docker.sh
     - echo "Running system tests..."
-    - GATEWAY_PORT=8088 docker compose -p testing-env up -d --build --wait && sleep 5
+    - GATEWAY_PORT=8888 GRAFANA_PORT=3333 docker compose -p testing-env up -d --build --wait && sleep 5
     - docker build -t api-tester ./tests && docker run --rm --network testing-env_default api-tester
   after_script:
     - docker compose -p testing-env down
