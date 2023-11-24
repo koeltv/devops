@@ -20,6 +20,9 @@ static-analysis-job:
     paths:
       - .sonar/cache
   script:
+    - cd ./gateway && chmod +x ./gradlew && ./gradlew testClasses --no-daemon && cd ..
+    - cd ./monitor && chmod +x ./gradlew && ./gradlew testClasses --no-daemon && cd ..
+    - cd ./service2 && chmod +x ./gradlew && ./gradlew testClasses --no-daemon && cd ..
     - sonar-scanner
   allow_failure: true
 
