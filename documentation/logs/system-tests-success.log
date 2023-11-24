@@ -1,0 +1,521 @@
+[0KRunning with gitlab-runner 16.5.0 (853330f9)[0;m
+[0K  on docker-runner t7dxdYPM, system ID: r_EdOxTOzg5hT6[0;m
+section_start:1700857152:prepare_executor[0K[0K[36;1mPreparing the "docker" executor[0;m[0;m
+[0KUsing Docker executor with image ubuntu:23.10 ...[0;m
+[0KPulling docker image ubuntu:23.10 ...[0;m
+[0KUsing docker image sha256:fe7a3960a97ee41f84c8045700d2e5bd671a42f02a64ee33dde10627dee1a7d7 for ubuntu:23.10 with digest ubuntu@sha256:4c32aacd0f7d1d3a29e82bee76f892ba9bb6a63f17f9327ca0d97c3d39b9b0ee ...[0;m
+section_end:1700857156:prepare_executor[0Ksection_start:1700857156:prepare_script[0K[0K[36;1mPreparing environment[0;m[0;m
+Running on runner-t7dxdypm-project-1-concurrent-0 via 014c685ddbef...
+section_end:1700857157:prepare_script[0Ksection_start:1700857157:get_sources[0K[0K[36;1mGetting source from Git repository[0;m[0;m
+[32;1mFetching changes with git depth set to 20...[0;m
+Reinitialized existing Git repository in /builds/root/rnvako/.git/
+[32;1mChecking out 107623fe as detached HEAD (ref is project)...[0;m
+Removing gateway/.gradle/
+Removing gateway/build/
+Removing monitor/.gradle/
+Removing monitor/build/
+Removing monitor/logs/
+Removing service1/target/
+Removing service2/.gradle/
+Removing service2/build/
+
+[32;1mSkipping Git submodules setup[0;m
+section_end:1700857158:get_sources[0Ksection_start:1700857158:step_script[0K[0K[36;1mExecuting "step_script" stage of the job script[0;m[0;m
+[0KUsing docker image sha256:fe7a3960a97ee41f84c8045700d2e5bd671a42f02a64ee33dde10627dee1a7d7 for ubuntu:23.10 with digest ubuntu@sha256:4c32aacd0f7d1d3a29e82bee76f892ba9bb6a63f17f9327ca0d97c3d39b9b0ee ...[0;m
+[32;1m$ chmod +x ./setup-docker.sh && ./setup-docker.sh[0;m
+Get:1 http://archive.ubuntu.com/ubuntu mantic InRelease [256 kB]
+Get:2 http://security.ubuntu.com/ubuntu mantic-security InRelease [109 kB]
+Get:3 http://archive.ubuntu.com/ubuntu mantic-updates InRelease [109 kB]
+Get:4 http://archive.ubuntu.com/ubuntu mantic-backports InRelease [90.7 kB]
+Get:5 http://archive.ubuntu.com/ubuntu mantic/main amd64 Packages [1808 kB]
+Get:6 http://archive.ubuntu.com/ubuntu mantic/universe amd64 Packages [18.8 MB]
+Get:7 http://security.ubuntu.com/ubuntu mantic-security/multiverse amd64 Packages [4791 B]
+Get:8 http://security.ubuntu.com/ubuntu mantic-security/main amd64 Packages [131 kB]
+Get:9 http://security.ubuntu.com/ubuntu mantic-security/restricted amd64 Packages [162 kB]
+Get:10 http://security.ubuntu.com/ubuntu mantic-security/universe amd64 Packages [36.9 kB]
+Get:11 http://archive.ubuntu.com/ubuntu mantic/restricted amd64 Packages [180 kB]
+Get:12 http://archive.ubuntu.com/ubuntu mantic/multiverse amd64 Packages [293 kB]
+Get:13 http://archive.ubuntu.com/ubuntu mantic-updates/main amd64 Packages [155 kB]
+Get:14 http://archive.ubuntu.com/ubuntu mantic-updates/universe amd64 Packages [47.7 kB]
+Get:15 http://archive.ubuntu.com/ubuntu mantic-updates/multiverse amd64 Packages [4791 B]
+Get:16 http://archive.ubuntu.com/ubuntu mantic-updates/restricted amd64 Packages [162 kB]
+Fetched 22.4 MB in 2s (11.2 MB/s)
+Reading package lists...
+debconf: delaying package configuration, since apt-utils is not installed
+
+You may press Ctrl+C now to abort this script.
++ sleep 0
++ sh -c apt-get update -qq >/dev/null
++ sh -c DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apt-transport-https ca-certificates curl gnupg >/dev/null
+debconf: delaying package configuration, since apt-utils is not installed
++ sh -c install -m 0755 -d /etc/apt/keyrings
++ sh -c curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
++ sh -c chmod a+r /etc/apt/keyrings/docker.gpg
++ sh -c echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu mantic stable" > /etc/apt/sources.list.d/docker.list
++ sh -c apt-get update -qq >/dev/null
++ sh -c DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-ce-rootless-extras docker-buildx-plugin >/dev/null
+debconf: delaying package configuration, since apt-utils is not installed
++ sh -c docker version
+[32;1m$ echo "Running system tests..."[0;m
+Running system tests...
+[32;1m$ GATEWAY_PORT=8888 GRAFANA_PORT=3333 docker compose -p testing-env up -d --build --wait && sleep 5[0;m
+#0 building with "default" instance using docker driver
+
+#1 [prometheus internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.1s
+
+#2 [broker internal] load build definition from Dockerfile
+#2 transferring dockerfile: 473B 0.0s done
+#2 DONE 0.1s
+
+#3 [gateway internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [broker internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.1s
+
+#5 [broker internal] load metadata for docker.io/library/rabbitmq:3.12.6-management-alpine
+#5 DONE 0.0s
+
+#6 [gateway internal] load build definition from Dockerfile
+#6 transferring dockerfile: 978B done
+#6 DONE 0.1s
+
+#7 [broker 1/5] FROM docker.io/library/rabbitmq:3.12.6-management-alpine
+#7 DONE 0.0s
+
+#8 [gateway internal] load metadata for docker.io/bellsoft/alpaquita-linux-base:latest
+#8 DONE 0.0s
+
+#9 [prometheus internal] load build definition from Dockerfile
+#9 transferring dockerfile: 163B done
+#9 DONE 0.1s
+
+#10 [gateway internal] load metadata for docker.io/library/eclipse-temurin:17-jdk
+#10 ...
+
+#11 [broker internal] load build context
+#11 transferring context: 3.07kB done
+#11 DONE 0.0s
+
+#12 [broker 2/5] COPY ./rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
+#12 CACHED
+
+#13 [broker 3/5] COPY ./definitions.json /etc/rabbitmq/definitions.json
+#13 CACHED
+
+#14 [broker 4/5] COPY run.sh /usr/local/bin/docker-entrypoint.sh
+#14 CACHED
+
+#15 [broker 5/5] RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+#15 CACHED
+
+#16 [broker] exporting to image
+#16 exporting layers done
+#16 writing image sha256:d2a7d94ae5452c41d857f0c9dd1903e79adaaf58e73c9b69beb77c92c8880ddd done
+#16 naming to docker.io/library/testing-env-broker done
+#16 DONE 0.0s
+
+#17 [prometheus internal] load metadata for docker.io/prom/prometheus:v2.48.0
+#17 ...
+
+#18 [monitor internal] load build definition from Dockerfile
+#18 transferring dockerfile: 779B done
+#18 DONE 0.0s
+
+#19 [monitor internal] load .dockerignore
+#19 transferring context: 2B done
+#19 DONE 0.1s
+
+#20 [service2 internal] load .dockerignore
+#20 transferring context: 2B done
+#20 DONE 0.1s
+
+#21 [service2 internal] load build definition from Dockerfile
+#21 transferring dockerfile: 978B done
+#21 DONE 0.1s
+
+#8 [service2 internal] load metadata for docker.io/bellsoft/alpaquita-linux-base:latest
+#8 DONE 0.0s
+
+#22 [service1 internal] load build definition from Dockerfile
+#22 transferring dockerfile: 760B done
+#22 DONE 0.1s
+
+#23 [service1 internal] load .dockerignore
+#23 transferring context: 2B done
+#23 DONE 0.1s
+
+#24 [service1 internal] load metadata for docker.io/library/rust:1.72
+#24 DONE 0.0s
+
+#10 [service2 internal] load metadata for docker.io/library/eclipse-temurin:17-jdk
+#10 DONE 1.0s
+
+#25 [gateway stage-1 1/3] FROM docker.io/bellsoft/alpaquita-linux-base
+#25 DONE 0.0s
+
+#26 [service2 builder 1/9] FROM docker.io/library/eclipse-temurin:17-jdk@sha256:ad6772e9844819032ddf606c1eb0d62df32c16dd14fb809c1543f0529cfff580
+#26 resolve docker.io/library/eclipse-temurin:17-jdk@sha256:ad6772e9844819032ddf606c1eb0d62df32c16dd14fb809c1543f0529cfff580 0.0s done
+#26 DONE 0.0s
+
+#17 [prometheus internal] load metadata for docker.io/prom/prometheus:v2.48.0
+#17 DONE 1.0s
+
+#27 [prometheus 1/2] FROM docker.io/prom/prometheus:v2.48.0@sha256:b440bc0e8aa5bab44a782952c09516b6a50f9d7b2325c1ffafac7bc833298e2e
+#27 DONE 0.0s
+
+#28 [gateway internal] load build context
+#28 transferring context: 83.50kB 0.0s done
+#28 DONE 0.1s
+
+#29 [prometheus internal] load build context
+#29 transferring context: 200B done
+#29 DONE 0.1s
+
+#30 [service2 internal] load build context
+#30 transferring context: 77.53kB 0.0s done
+#30 DONE 0.1s
+
+#31 [service2 builder 4/9] COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+#31 CACHED
+
+#32 [service2 builder 3/9] COPY gradle ./gradle
+#32 CACHED
+
+#33 [service2 builder 6/9] RUN ["./gradlew", "--refresh-dependencies", "--no-daemon"]
+#33 CACHED
+
+#34 [service2 stage-1 2/3] COPY --from=builder /home/project/build/jre/*-alpine-linux /jre
+#34 CACHED
+
+#35 [service2 builder 5/9] RUN ["chmod", "+x", "./gradlew"]
+#35 CACHED
+
+#36 [service2 builder 9/9] RUN ["./gradlew", "shadowJar", "--no-daemon"]
+#36 CACHED
+
+#37 [service2 builder 8/9] COPY src ./src
+#37 CACHED
+
+#38 [service2 builder 7/9] RUN ["./gradlew", "jre", "--no-daemon"]
+#38 CACHED
+
+#39 [service2 stage-1 3/3] COPY --from=builder /home/project/build/libs/*-all.jar service.jar
+#39 CACHED
+
+#40 [service2] exporting to image
+#40 exporting layers done
+#40 writing image sha256:e466ee906a7f641b37d69313a6a3a008120822a4084217f5987818616a92e8f3 done
+#40 naming to docker.io/library/testing-env-service2 done
+#40 DONE 0.0s
+
+#41 [prometheus 2/2] COPY ./prometheus.yml /etc/prometheus/prometheus.yml
+#41 CACHED
+
+#42 [gateway builder 6/9] RUN ["./gradlew", "--refresh-dependencies", "--no-daemon"]
+#42 CACHED
+
+#43 [gateway builder 5/9] RUN ["chmod", "+x", "./gradlew"]
+#43 CACHED
+
+#44 [gateway builder 9/9] RUN ["./gradlew", "shadowJar", "--no-daemon"]
+#44 CACHED
+
+#45 [gateway builder 3/9] COPY gradle ./gradle
+#45 CACHED
+
+#46 [gateway builder 4/9] COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+#46 CACHED
+
+#47 [gateway builder 7/9] RUN ["./gradlew", "jre", "--no-daemon"]
+#47 CACHED
+
+#48 [gateway stage-1 2/3] COPY --from=builder /home/project/build/jre/*-alpine-linux /jre
+#48 CACHED
+
+#49 [gateway builder 8/9] COPY src ./src
+#49 CACHED
+
+#50 [service2 builder 2/9] WORKDIR /home/project
+#50 CACHED
+
+#51 [gateway stage-1 3/3] COPY --from=builder /home/project/build/libs/*-all.jar service.jar
+#51 CACHED
+
+#52 [gateway] exporting to image
+#52 exporting layers done
+#52 writing image sha256:93a5dafd235d0d6a977d81356195f3c16d306b66caf3abfb85560977c1d09ce2 0.0s done
+#52 naming to docker.io/library/testing-env-gateway done
+#52 DONE 0.0s
+
+#53 [prometheus] exporting to image
+#53 exporting layers done
+#53 writing image sha256:f8045f7558857ffc5dcff1dfeed7767789b1ef1c66edfdbb859a5780b295074b 0.0s done
+#53 naming to docker.io/library/testing-env-prometheus done
+#53 DONE 0.0s
+
+#54 [service1 internal] load metadata for docker.io/library/debian:bookworm-20230904-slim
+#54 ...
+
+#55 [monitor internal] load metadata for docker.io/library/eclipse-temurin:17-jre-alpine
+#55 DONE 1.0s
+
+#26 [monitor builder 1/9] FROM docker.io/library/eclipse-temurin:17-jdk@sha256:ad6772e9844819032ddf606c1eb0d62df32c16dd14fb809c1543f0529cfff580
+#26 resolve docker.io/library/eclipse-temurin:17-jdk@sha256:ad6772e9844819032ddf606c1eb0d62df32c16dd14fb809c1543f0529cfff580 0.0s done
+#26 DONE 0.1s
+
+#56 [monitor stage-1 1/2] FROM docker.io/library/eclipse-temurin:17-jre-alpine@sha256:984703da8353d0a33eb04944b56665e84c6271e5d4f8a679e73cb5bd2b846301
+#56 DONE 0.0s
+
+#57 [monitor internal] load build context
+#57 transferring context: 88.12kB 0.0s done
+#57 DONE 1.4s
+
+#58 [monitor builder 6/8] RUN ["./gradlew", "--refresh-dependencies", "--no-daemon"]
+#58 CACHED
+
+#59 [monitor builder 7/8] COPY src ./src
+#59 CACHED
+
+#60 [monitor builder 4/8] COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+#60 CACHED
+
+#61 [monitor builder 5/8] RUN ["chmod", "+x", "./gradlew"]
+#61 CACHED
+
+#50 [monitor builder 2/9] WORKDIR /home/project
+#50 CACHED
+
+#62 [monitor builder 3/8] COPY gradle ./gradle
+#62 CACHED
+
+#63 [monitor builder 8/8] RUN ["./gradlew", "bootJar", "--no-daemon"]
+#63 CACHED
+
+#64 [monitor stage-1 2/2] COPY --from=builder /home/project/build/libs/*.jar service.jar
+#64 CACHED
+
+#65 [monitor] exporting to image
+#65 exporting layers done
+#65 writing image sha256:c5281a3f1311667c6a7cc847e694909f33870c49a229437869f57ce8e7b09bb3 done
+#65 naming to docker.io/library/testing-env-monitor
+#65 naming to docker.io/library/testing-env-monitor done
+#65 DONE 0.0s
+
+#66 [grafana internal] load build definition from Dockerfile
+#66 transferring dockerfile: 264B done
+#66 DONE 0.1s
+
+#67 [grafana internal] load .dockerignore
+#67 transferring context: 2B done
+#67 DONE 0.1s
+
+#54 [service1 internal] load metadata for docker.io/library/debian:bookworm-20230904-slim
+#54 ...
+
+#68 [grafana internal] load metadata for docker.io/grafana/grafana:10.2.2
+#68 DONE 0.0s
+
+#69 [grafana 1/3] FROM docker.io/grafana/grafana:10.2.2
+#69 DONE 0.0s
+
+#70 [grafana internal] load build context
+#70 transferring context: 983.25kB 0.0s done
+#70 DONE 0.1s
+
+#71 [grafana 2/3] COPY grafana.db /var/lib/grafana/grafana.db
+#71 CACHED
+
+#72 [grafana 3/3] RUN ["chmod", "a+w", "/var/lib/grafana/grafana.db"]
+#72 CACHED
+
+#73 [grafana] exporting to image
+#73 exporting layers done
+#73 writing image sha256:1fddbf7660c47bd22ec9695d082d056a949ac5687e79c535d46b77f9de6550a3 0.0s done
+#73 naming to docker.io/library/testing-env-grafana 0.1s done
+#73 DONE 0.1s
+
+#54 [service1 internal] load metadata for docker.io/library/debian:bookworm-20230904-slim
+#54 DONE 3.1s
+
+#74 [service1 builder 1/5] FROM docker.io/library/rust:1.72
+#74 DONE 0.0s
+
+#75 [service1 stage-1 1/3] FROM docker.io/library/debian:bookworm-20230904-slim@sha256:050f00e86cc4d928b21de66096126fac52c2ea47885c232932b2e4c00f0c116d
+#75 DONE 0.0s
+
+#76 [service1 internal] load build context
+#76 transferring context: 56.73kB done
+#76 DONE 0.0s
+
+#77 [service1 builder 2/5] COPY Cargo.toml Cargo.lock ./
+#77 CACHED
+
+#78 [service1 stage-1 2/3] RUN apt-get update && apt-get install -y --no-install-recommends libssl-dev && rm -rf /var/lib/apt/lists/*
+#78 CACHED
+
+#79 [service1 builder 5/5] RUN cargo install --path .
+#79 CACHED
+
+#80 [service1 builder 4/5] COPY src ./src
+#80 CACHED
+
+#81 [service1 builder 3/5] RUN mkdir src && echo 'fn main() {}' > src/main.rs && cargo build --release
+#81 CACHED
+
+#82 [service1 stage-1 3/3] COPY --from=builder /usr/local/cargo/bin/service1 /service1
+#82 CACHED
+
+#83 [service1] exporting to image
+#83 exporting layers done
+#83 writing image sha256:8de014ee6618254bed3d69ccd082836f5fdc6243bbfdca2d67463aa2da4874b5 done
+#83 naming to docker.io/library/testing-env-service1 done
+#83 DONE 0.0s
+ Network testing-env_default  Creating
+ Network testing-env_default  Created
+ Network testing-env_internal  Creating
+ Network testing-env_internal  Created
+ Container testing-env-prometheus-1  Creating
+ Container testing-env-broker-1  Creating
+ Container testing-env-gateway-1  Creating
+ Container testing-env-prometheus-1  Created
+ Container testing-env-grafana-1  Creating
+ Container testing-env-gateway-1  Created
+ Container testing-env-broker-1  Created
+ Container testing-env-monitor-1  Creating
+ Container testing-env-service1-1  Creating
+ Container testing-env-service2-1  Creating
+ Container testing-env-service2-1  Created
+ Container testing-env-monitor-1  Created
+ Container testing-env-service1-1  Created
+ Container testing-env-grafana-1  Created
+ Container testing-env-broker-1  Starting
+ Container testing-env-prometheus-1  Starting
+ Container testing-env-gateway-1  Starting
+ Container testing-env-prometheus-1  Started
+ Container testing-env-grafana-1  Starting
+ Container testing-env-broker-1  Started
+ Container testing-env-broker-1  Waiting
+ Container testing-env-broker-1  Waiting
+ Container testing-env-broker-1  Waiting
+ Container testing-env-gateway-1  Started
+ Container testing-env-grafana-1  Started
+ Container testing-env-broker-1  Healthy
+ Container testing-env-service2-1  Starting
+ Container testing-env-broker-1  Healthy
+ Container testing-env-service1-1  Starting
+ Container testing-env-broker-1  Healthy
+ Container testing-env-monitor-1  Starting
+ Container testing-env-service2-1  Started
+ Container testing-env-service1-1  Started
+ Container testing-env-monitor-1  Started
+ Container testing-env-service2-1  Waiting
+ Container testing-env-broker-1  Waiting
+ Container testing-env-monitor-1  Waiting
+ Container testing-env-gateway-1  Waiting
+ Container testing-env-prometheus-1  Waiting
+ Container testing-env-grafana-1  Waiting
+ Container testing-env-service1-1  Waiting
+ Container testing-env-monitor-1  Healthy
+ Container testing-env-broker-1  Healthy
+ Container testing-env-gateway-1  Healthy
+ Container testing-env-service2-1  Healthy
+ Container testing-env-service1-1  Healthy
+ Container testing-env-prometheus-1  Healthy
+ Container testing-env-grafana-1  Healthy
+[32;1m$ docker build -t api-tester ./tests && docker run --rm --network testing-env_default api-tester[0;m
+#0 building with "default" instance using docker driver
+
+#1 [internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 360B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/schemathesis/schemathesis:v3.21.0-buster
+#3 DONE 0.0s
+
+#4 [1/2] FROM docker.io/schemathesis/schemathesis:v3.21.0-buster
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 3.00kB done
+#5 DONE 0.0s
+
+#6 [2/2] COPY apis /apis
+#6 CACHED
+
+#7 exporting to image
+#7 exporting layers done
+#7 writing image sha256:bed9667d590d995eb991e90b7ffa954c9c7450449973ef1ac983c4673b999b59 done
+#7 naming to docker.io/library/api-tester done
+#7 DONE 0.0s
+WARNING: The provided hosts.toml file location is unusable - using a temporary file for this session. path='/home/schemathesis/.config/schemathesis/hosts.toml'
+======================= Schemathesis test session starts =======================
+Schema location: file:///apis/openapi.yml
+Base URL: http://gateway
+Specification version: Open API 3.0.3
+Workers: 1
+Collected API operations: 5
+
+GET /messages .                                                           [ 20%]
+GET /state .                                                              [ 40%]
+PUT /state .                                                              [ 60%]
+GET /run-log .                                                            [ 80%]
+GET /mqstatistic .                                                        [100%]
+
+=================================== SUMMARY ====================================
+
+Performed checks:
+    not_a_server_error                              105 / 105 passed          PASSED 
+    status_code_conformance                         105 / 105 passed          PASSED 
+    content_type_conformance                        105 / 105 passed          PASSED 
+    response_headers_conformance                    105 / 105 passed          PASSED 
+    response_schema_conformance                     105 / 105 passed          PASSED 
+
+Tip: Use the `--report` CLI option to visualize test results via Schemathesis.io.
+We run additional conformance checks on reports from public repos.
+
+============================== 5 passed in 3.56s ===============================
+section_end:1700857267:step_script[0Ksection_start:1700857267:after_script[0K[0K[36;1mRunning after_script[0;m[0;m
+[32;1mRunning after script...[0;m
+[32;1m$ docker compose -p testing-env down[0;m
+ Container testing-env-monitor-1  Stopping
+ Container testing-env-service2-1  Stopping
+ Container testing-env-service1-1  Stopping
+ Container testing-env-grafana-1  Stopping
+ Container testing-env-gateway-1  Stopping
+ Container testing-env-grafana-1  Stopped
+ Container testing-env-grafana-1  Removing
+ Container testing-env-grafana-1  Removed
+ Container testing-env-prometheus-1  Stopping
+ Container testing-env-prometheus-1  Stopped
+ Container testing-env-prometheus-1  Removing
+ Container testing-env-prometheus-1  Removed
+ Container testing-env-monitor-1  Stopped
+ Container testing-env-monitor-1  Removing
+ Container testing-env-monitor-1  Removed
+ Container testing-env-service2-1  Stopped
+ Container testing-env-service2-1  Removing
+ Container testing-env-service2-1  Removed
+ Container testing-env-gateway-1  Stopped
+ Container testing-env-gateway-1  Removing
+ Container testing-env-gateway-1  Removed
+ Container testing-env-service1-1  Stopped
+ Container testing-env-service1-1  Removing
+ Container testing-env-service1-1  Removed
+ Container testing-env-broker-1  Stopping
+ Container testing-env-broker-1  Stopped
+ Container testing-env-broker-1  Removing
+ Container testing-env-broker-1  Removed
+ Network testing-env_default  Removing
+ Network testing-env_internal  Removing
+ Network testing-env_default  Removed
+ Network testing-env_internal  Removed
+section_end:1700857290:after_script[0K[32;1mJob succeeded[0;m

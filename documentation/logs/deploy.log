@@ -1,0 +1,96 @@
+[0KRunning with gitlab-runner 16.5.0 (853330f9)[0;m
+[0K  on docker-runner t7dxdYPM, system ID: r_EdOxTOzg5hT6[0;m
+section_start:1700857294:prepare_executor[0K[0K[36;1mPreparing the "docker" executor[0;m[0;m
+[0KUsing Docker executor with image ubuntu:23.10 ...[0;m
+[0KPulling docker image ubuntu:23.10 ...[0;m
+[0KUsing docker image sha256:fe7a3960a97ee41f84c8045700d2e5bd671a42f02a64ee33dde10627dee1a7d7 for ubuntu:23.10 with digest ubuntu@sha256:4c32aacd0f7d1d3a29e82bee76f892ba9bb6a63f17f9327ca0d97c3d39b9b0ee ...[0;m
+section_end:1700857299:prepare_executor[0Ksection_start:1700857299:prepare_script[0K[0K[36;1mPreparing environment[0;m[0;m
+Running on runner-t7dxdypm-project-1-concurrent-0 via 014c685ddbef...
+section_end:1700857300:prepare_script[0Ksection_start:1700857300:get_sources[0K[0K[36;1mGetting source from Git repository[0;m[0;m
+[32;1mFetching changes with git depth set to 20...[0;m
+Reinitialized existing Git repository in /builds/root/rnvako/.git/
+[32;1mChecking out 107623fe as detached HEAD (ref is project)...[0;m
+Removing docker-setup.sh
+Removing get-docker.sh
+
+[32;1mSkipping Git submodules setup[0;m
+section_end:1700857301:get_sources[0Ksection_start:1700857301:step_script[0K[0K[36;1mExecuting "step_script" stage of the job script[0;m[0;m
+[0KUsing docker image sha256:fe7a3960a97ee41f84c8045700d2e5bd671a42f02a64ee33dde10627dee1a7d7 for ubuntu:23.10 with digest ubuntu@sha256:4c32aacd0f7d1d3a29e82bee76f892ba9bb6a63f17f9327ca0d97c3d39b9b0ee ...[0;m
+[32;1m$ chmod +x ./setup-docker.sh && ./setup-docker.sh[0;m
+Get:1 http://security.ubuntu.com/ubuntu mantic-security InRelease [109 kB]
+Get:2 http://archive.ubuntu.com/ubuntu mantic InRelease [256 kB]
+Get:3 http://security.ubuntu.com/ubuntu mantic-security/multiverse amd64 Packages [4791 B]
+Get:4 http://security.ubuntu.com/ubuntu mantic-security/universe amd64 Packages [36.9 kB]
+Get:5 http://security.ubuntu.com/ubuntu mantic-security/main amd64 Packages [131 kB]
+Get:6 http://security.ubuntu.com/ubuntu mantic-security/restricted amd64 Packages [162 kB]
+Get:7 http://archive.ubuntu.com/ubuntu mantic-updates InRelease [109 kB]
+Get:8 http://archive.ubuntu.com/ubuntu mantic-backports InRelease [90.7 kB]
+Get:9 http://archive.ubuntu.com/ubuntu mantic/restricted amd64 Packages [180 kB]
+Get:10 http://archive.ubuntu.com/ubuntu mantic/multiverse amd64 Packages [293 kB]
+Get:11 http://archive.ubuntu.com/ubuntu mantic/universe amd64 Packages [18.8 MB]
+Get:12 http://archive.ubuntu.com/ubuntu mantic/main amd64 Packages [1808 kB]
+Get:13 http://archive.ubuntu.com/ubuntu mantic-updates/multiverse amd64 Packages [4791 B]
+Get:14 http://archive.ubuntu.com/ubuntu mantic-updates/universe amd64 Packages [47.7 kB]
+Get:15 http://archive.ubuntu.com/ubuntu mantic-updates/restricted amd64 Packages [162 kB]
+Get:16 http://archive.ubuntu.com/ubuntu mantic-updates/main amd64 Packages [155 kB]
+Fetched 22.4 MB in 3s (7295 kB/s)
+Reading package lists...
+debconf: delaying package configuration, since apt-utils is not installed
+
+You may press Ctrl+C now to abort this script.
++ sleep 0
++ sh -c apt-get update -qq >/dev/null
++ sh -c DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apt-transport-https ca-certificates curl gnupg >/dev/null
+debconf: delaying package configuration, since apt-utils is not installed
++ sh -c install -m 0755 -d /etc/apt/keyrings
++ sh -c curl -fsSL "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor --yes -o /etc/apt/keyrings/docker.gpg
++ sh -c chmod a+r /etc/apt/keyrings/docker.gpg
++ sh -c echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu mantic stable" > /etc/apt/sources.list.d/docker.list
++ sh -c apt-get update -qq >/dev/null
++ sh -c DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-ce-rootless-extras docker-buildx-plugin >/dev/null
+debconf: delaying package configuration, since apt-utils is not installed
++ sh -c docker version
+[32;1m$ echo "Deploying application..."[0;m
+Deploying application...
+[32;1m$ docker compose up -d[0;m
+ Network rnvako_default  Creating
+ Network rnvako_default  Created
+ Network rnvako_internal  Creating
+ Network rnvako_internal  Created
+ Volume "rnvako_grafana-data"  Creating
+ Volume "rnvako_grafana-data"  Created
+ Container rnvako-prometheus-1  Creating
+ Container rnvako-gateway-1  Creating
+ Container rnvako-broker-1  Creating
+ Container rnvako-broker-1  Created
+ Container rnvako-monitor-1  Creating
+ Container rnvako-service2-1  Creating
+ Container rnvako-service1-1  Creating
+ Container rnvako-prometheus-1  Created
+ Container rnvako-grafana-1  Creating
+ Container rnvako-gateway-1  Created
+ Container rnvako-monitor-1  Created
+ Container rnvako-service1-1  Created
+ Container rnvako-service2-1  Created
+ Container rnvako-grafana-1  Created
+ Container rnvako-prometheus-1  Starting
+ Container rnvako-broker-1  Starting
+ Container rnvako-gateway-1  Starting
+ Container rnvako-broker-1  Started
+ Container rnvako-broker-1  Waiting
+ Container rnvako-broker-1  Waiting
+ Container rnvako-broker-1  Waiting
+ Container rnvako-prometheus-1  Started
+ Container rnvako-grafana-1  Starting
+ Container rnvako-gateway-1  Started
+ Container rnvako-grafana-1  Started
+ Container rnvako-broker-1  Healthy
+ Container rnvako-broker-1  Healthy
+ Container rnvako-monitor-1  Starting
+ Container rnvako-service2-1  Starting
+ Container rnvako-broker-1  Healthy
+ Container rnvako-service1-1  Starting
+ Container rnvako-service2-1  Started
+ Container rnvako-service1-1  Started
+ Container rnvako-monitor-1  Started
+section_end:1700857371:step_script[0K[32;1mJob succeeded[0;m
